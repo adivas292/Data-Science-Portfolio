@@ -1,5 +1,10 @@
 # Indian Consumer Credit Behavior Classification Model
+### 👤 Developer: Advik Vasanth (UC Irvine Computer Science & Statistics)
+🔒 *Production Source Code: PRIVATE (Available for review upon formal interview request)*
+
 [← Back to Portfolio Home](./README.md)
+
+---
 
 ## 📊 Project Overview
 This data science project constructs a binary logistic regression classifier using `scikit-learn` to predict consumer demographic profiles based on credit card transaction traits. After proving via exploratory data diagnostics that raw transaction amounts possessed zero linear correlation with consumer features (R²: -0.0001), the pipeline was refactored from a regression baseline into a classification framework to isolate subtle behavioral spending signals across 26,052 real-world retail transactions.
@@ -17,13 +22,13 @@ This data science project constructs a binary logistic regression classifier usi
 ## 📐 Production Code Architecture (Logic Blueprint)
 ```python
 # Mapped directly from the private production codebase
-import pandas as pd
 import numpy as np
+import pandas as pd
 
 def preprocess_credit_behavior_data(df):
     # Chronological Feature Engineering: Extract weekend behavioral indicators
     df["purchase_date"] = pd.to_datetime(df["Date"])
-    df["is_weekend"] = df["purchase_date"].dt.dayofweek.isin([5, 6]).astype(int)
+    df["is_weekend"] = df["purchase_date"].dt.dayofweek.isin().astype(int)
     
     # Categorical Matrix Encoding: Execute One-Hot Encoding across dimensional vectors
     categorical_cols = ["Card Type", "Exp Type"]
@@ -34,25 +39,23 @@ def preprocess_credit_behavior_data(df):
     df_encoded[dummy_columns] = df_encoded[dummy_columns].astype(int)
     
     # Data Leakage Prevention: Drop system constants, tracking IDs, and target strings
-    # Target variable 'Gender' is isolated separately for the y vector
     X = df_encoded.drop(columns=["index", "Date", "purchase_date", "City", "Amount", "Gender"])
     return X
 ```
 
 ## 📈 Model Performance & Statistical Evaluation
-The logistic classifier was fitted to an 80% training data partition and validated against an unseen 20% testing matrix containing 5,211 independent transaction records:
+The logistic classifier was fitted to an 80% training data partition and validated against an unseen 20% testing matrix containing 5,211 independent transaction records.
 
-* **Overall Classification Accuracy:** `53.60%` (Successfully outperforming a random 50/50 blind coin-flip threshold)
-* **Dataset Baseline Integration:** Proved raw transaction amounts possessed zero linear correlation with consumer attributes (\(R^2\): -0.0001), justifying the architectural pivot into behavioral classification models.
+* **Overall Classification Accuracy**: `53.60%` — The model successfully beats a random 50/50 blind coin-flip threshold, proving the presence of a mild behavioral spending signal within category selection.
 
-### 📊 Confusion Matrix Diagnostics
-Using automated `ConfusionMatrixDisplay` pipelines, validation predictions were bucketed into a strict 2x2 grid to evaluate underlying classification behavior:
-* **True Negatives (Correctly Identified Males):** `733`
-* **True Positives (Correctly Identified Females):** `2,060`
-* **False Negatives (Missed Females):** `694`
-* **False Positives (Missed Males):** `1,724`
+### 📉 Residual Diagnostics
+Using automated `ConfusionMatrixDisplay` pipelines, predictions were bucketed into a strict 2x2 grid to diagnose underlying model behavior and check classification errors:
+* **True Negatives (Correctly Identified Males)**: `733`
+* **True Positives (Correctly Identified Females)**: `2,060`
+* **False Negatives (Missed Females)**: `694`
+* **False Positives (Missed Males)**: `1,724`
 
-**Analytical Takeaway:** The heavy concentration of True Positives and False Positives highlights a distinct classification bias toward the majority class in the training dataset. This visual diagnosis provides a direct avenue for future production optimization via synthetic oversampling (SMOTE) or the integration of continuous regional parameters.
+**Analytical Takeaway**: The heavy concentration of True Positives and False Positives highlights a distinct classification bias toward the majority class in the training dataset. This visual diagnosis provides a direct avenue for production optimization via synthetic oversampling (SMOTE) or the integration of continuous regional parameters.
 
 ---
 © 2026 Advik Vasanth. All rights reserved.
