@@ -13,9 +13,9 @@ This data science project constructs a multivariate linear regression model comp
 
 ## 🛠️ Key Technical Implementations
 * **Target Optimization**: Identified severe right-skewness within the raw real estate pricing data. Implemented a natural logarithmic transformation (`np.log1p`) to normalize the target distribution, successfully optimizing the pricing skewness score from an imbalanced 0.73 down to a statistically sound -0.42.
-* **Outlier Mitigation**: Calculated statistical dataset boundaries dynamically using the Interquartile Range (IQR) method (Q3 - Q1) to drop extreme pricing anomalies without introducing data leakage.
-* **Vectorized Feature Engineering**: Detected a data logging error where unrenovated homes default to a year value of 0. Applied vectorized NumPy logic (`np.where`) to engineer a clean `house_age` predictor relative to the market timeline, reducing structural noise.
-* **Data Leakage Prevention**: Deliberately stripped tracking keys, string text fields, and derivative pricing variables (such as `price_per_sqft`) from the feature matrix X to maintain full predictive integrity.
+* **Outlier Mitigation**: Calculated statistical dataset boundaries dynamically using the Interquartile Range (IQR) method (Q3 - Q1) to drop extreme pricing anomalies via index mapping without introducing data leakage.
+* **Vectorized Feature Engineering**: Detected a data logging error where unrenovated homes default to a year value of 0. Applied conditional NumPy selection (`np.where`) to determine an `effective_year` array, calculating a clean `house_age` predictor relative to the 2015 market baseline.
+* **Data Leakage Prevention**: Deliberately stripped tracking keys, string text fields, and structural calculation variables (including `yr_built`, `yr_renovated`, and `effective_year`) from the matrix to isolate predictive parameters and maintain pipeline integrity.
 
 ---
 
@@ -41,20 +41,20 @@ def preprocess_washington_housing_data(df):
     df = df.drop(df[df["price"] < lower_bound].index)
     df = df.drop(df[df["price"] > upper_bound].index)
     
-    # Vectorized Feature Engineering: Clean data logging errors for house age
-    df_clean["house_age"] = np.where(df_clean["yr_renovated"] == 0, 
-                                     df_clean["yr_built"], 
-                                     df_clean["yr_renovated"])
+    # Vectorized Feature Engineering: Clean data logging errors and compute house age
+    df["effective_year"] = np.where(df["yr_renovated"] > 0, df["yr_renovated"], df["yr_built"])
+    df["house_age"] = 2015 - df["effective_year"]
     
-    # Data Leakage Prevention: Strip tracking keys, strings, and derivative inputs
-    X = df_clean.drop(columns=["id", "date", "price", "log_price", "price_per_sqft"])
+    # Data Leakage Prevention: Strip tracking keys, strings, and internal calculations
+    X = df.drop(axis=1, columns=["price", "log_price", "date", "street", "city", "statezip", 
+                                 "yr_built", "yr_renovated", "effective_year"])
     return X
 ```
 
 ## 📈 Model Performance & Statistical Evaluation
 The baseline linear regression engine was trained on an 80% data partition and validated against an unseen 20% testing matrix.
 
-* **R² Score (Coefficient of Determination)**: `0.3544` — The engineered physical features successfully account for over 35% of the total variance observed in regional real estate pricing.
+* **R² Score (Coefficient of Determination)**: `0.3544` — The engineered physical attributes successfully account for over 35% of the total variance observed in regional real estate pricing.
 * **RMSE (Root Mean Squared Error)**: `$168,892.58` — The average real-world dollar margin of error for the model's asset valuations.
 
 ### 📉 Residual Diagnostics
