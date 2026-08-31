@@ -14,7 +14,7 @@ This data science project constructs a binary logistic regression classifier usi
 ## 🛠️ Key Technical Implementations
 * **Pipeline Refactoring**: Successfully pivoted a dead-end regression framework into a binary logistic classification system, shifting the target variable from continuous pricing rows to demographic indicators.
 * **Chronological Feature Engineering**: Parsed raw calendar text strings to extract day-of-the-week indexes, engineering a custom behavioral metric (`is_weekend`) to isolate shifting consumer weekend expenditure patterns.
-* **Categorical Matrix Encoding**: Implemented multi-column One-Hot Encoding via Pandas across dimensional transaction factors (`Card Type` and `Expense Categories`), applying explicit integer type casting (`.astype(int)`) to eliminate boolean noise and guarantee matrix shape alignment.
+* **Categorical Matrix Encoding**: Implemented multi-column One-Hot Encoding via Pandas across dimensional transaction factors (`Card Type` and `Exp Type`), applying explicit integer type casting (`.astype(int)`) to eliminate boolean noise and guarantee matrix shape alignment.
 * **Data Leakage Prevention**: Explicitly dropped unique system constants, text strings, tracking identifiers, and regional city inputs from the final feature grid (X), maintaining strict predictive validation integrity.
 
 ---
@@ -26,21 +26,20 @@ import numpy as np
 import pandas as pd
 
 def preprocess_credit_behavior_data(df):
+    # Target Isolation: Map gender records to continuous numeric boundaries
+    gender_numeric = df['Gender'].map({'F': 1, 'M': 0})
+    
     # Chronological Feature Engineering: Extract weekend behavioral indicators
-    df["purchase_date"] = pd.to_datetime(df["Date"])
-    df["is_weekend"] = df["purchase_date"].dt.dayofweek.isin().astype(int)
+    df['Card Usage Date'] = pd.to_datetime(df['Date'])
+    df['is_weekend'] = (df['Card Usage Date'].dt.weekday >= 5).astype(int)
     
     # Categorical Matrix Encoding: Execute One-Hot Encoding across dimensional vectors
-    categorical_cols = ["Card Type", "Exp Type"]
-    df_encoded = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+    encoded_columns = pd.get_dummies(df[['Card Type', 'Exp Type', 'Amount']])
+    encoded_columns = encoded_columns.astype(int)
     
-    # Cast boolean dummies to explicit integers to eliminate matrix noise
-    dummy_columns = [col for col in df_encoded.columns if any(p in col for p in categorical_cols)]
-    df_encoded[dummy_columns] = df_encoded[dummy_columns].astype(int)
-    
-    # Data Leakage Prevention: Drop system constants, tracking IDs, and target strings
-    X = df_encoded.drop(columns=["index", "Date", "purchase_date", "City", "Amount", "Gender"])
-    return X
+    # Unify predictors into a single matrix block
+    X = pd.concat([encoded_columns, df['is_weekend']], axis=1)
+    return X, gender_numeric
 ```
 
 ## 📈 Model Performance & Statistical Evaluation
