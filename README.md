@@ -1,4 +1,4 @@
-# Advik Vasanth | Data Science & Machine Learning Portfolio
+# Advik Vasanth | Data Science & Machine Learning Portfolios
 ### 🎓 Computer Science & Statistics Undergrad at UC Irvine
 Welcome to my data science repository showcase. This central hub indexes architectural overviews, statistical evaluations, and code-logic blueprints for my machine learning projects.
 
