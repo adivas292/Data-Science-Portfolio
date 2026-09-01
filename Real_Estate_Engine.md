@@ -61,4 +61,6 @@ The baseline linear regression engine was trained on an 80% data partition and v
 To ensure model stability, a residual error analysis ($y - \hat{y}$) was conducted. The prediction errors are evenly and randomly distributed above and below the horizontal zero baseline across all pricing tiers. This homoscedastic behavior visually proves that the model's linear assumptions are valid and stable.
 
 ---
+
+## ⚖️ Copyright & Licensing
 © 2026 Advik Vasanth. All rights reserved. Unauthorized cloning, scraping, or distribution of these architectural blueprints is strictly prohibited.
