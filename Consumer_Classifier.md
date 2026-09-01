@@ -57,4 +57,6 @@ Using automated `ConfusionMatrixDisplay` pipelines, predictions were bucketed in
 **Analytical Takeaway**: The heavy concentration of True Positives and False Positives highlights a distinct classification bias toward the majority class in the training dataset. This visual diagnosis provides a direct avenue for production optimization via synthetic oversampling (SMOTE) or the integration of continuous regional parameters.
 
 ---
+
+## ⚖️ Copyright & Licensing
 © 2026 Advik Vasanth. All rights reserved. Unauthorized cloning, scraping, or distribution of these architectural blueprints is strictly prohibited.
