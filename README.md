@@ -19,4 +19,6 @@ Welcome to my data science repository showcase. This central hub indexes archite
 * **Core Toolstack:** Python, Pandas, NumPy, Scikit-Learn
 
 ---
+
+## ⚖️ Copyright & Licensing
 © 2026 Advik Vasanth. All rights reserved. Unauthorized cloning, scraping, or distribution of these architectural blueprints is strictly prohibited.
